@@ -10,6 +10,11 @@ TOMCAT_URL=$(curl -s https://tomcat.apache.org/download-80.cgi | grep tar.gz | g
 TOMCAT_DIR=$(echo $TOMCAT_URL | awk -F / '{print $NF}'  | sed -e 's/.tar.gz//')
 STUDENT_WAR_URL=https://github.com/citb34/project-1-documentation/raw/master/studentapp.war
 TOMCAT_USER=student
+DB_CONN='<Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource" maxTotal="100" maxIdle="30" maxWaitMillis="10000" username="USERNAME" password="PASSWORD" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://RDS-ENDPOINT:3306/DATABASE"/>'
+DBUSER=student
+DBPASS=student1
+DBNAME=studentapp
+DBIP=dummy.rds.com
 
 ### Functions
 Stat() {
@@ -87,6 +92,8 @@ Stat $?
 chown $TOMCAT_USER:$TOMCAT_USER /home/$TOMCAT_USER -R 
 
 echo -n -e "  -> Configuring Tomcat Service"
+sed -i -e "$ i $DB_CONN" /home/$TOMCAT_USER/$TOMCAT_DIR/conf/context.xml
+sed -i -e "s/USERNAME/$DBUSER/" -e "s/PASSWORD/$DBPASS/" -e "s/RDS-ENDPOINT/$DBIP/" -e "s/DATABASE/$DBNAME/"  /home/$TOMCAT_USER/$TOMCAT_DIR/conf/context.xml
 wget https://raw.githubusercontent.com/citb34/project-1-documentation/master/tomcat-init -O /etc/init.d/tomcat &>>$LOG 
 chmod ugo+x /etc/init.d/tomcat
 Stat $? 
