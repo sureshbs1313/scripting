@@ -1,0 +1,25 @@
+yum install java-1.8.0-openjdk -y
+
+
+
+cd /opt
+wget https://sonatype-download.global.ssl.fastly.net/nexus/3/nexus-3.0.2-02-unix.tar.gz
+tar -zxvf  nexus-3.0.2-02-unix.tar.gz
+mv /opt/nexus-3.0.2-02 /opt/nexus
+
+sudo adduser nexus
+
+# visudo \\ nexus   ALL=(ALL)       NOPASSWD: ALL
+sudo chown -R nexus:nexus /opt/nexus
+
+vi /opt/nexus/bin/nexus.rc
+nexus
+
+sudo ln -s /opt/nexus/bin/nexus /etc/init.d/nexus
+
+su - nexus
+service nexus start
+http://<Nexus_server>:8081
+
+username : admin
+password : admin123
